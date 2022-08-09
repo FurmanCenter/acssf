@@ -149,6 +149,12 @@ acs_transform <- function(year, span, geo, sum_levels, keep_vars, acs_dir = ".",
       span = as.integer(span)
     ) %>%
     add_na_cols(keep_acs_vars) %>%
+    # temp fix: somehow map_dfc would keep all these four columns, and we only need to
+    # keep the first occurrence and rename it to be with out the ...number
+    dplyr::mutate(geoid_full = `geoid_full...1`,
+                  geoid = `geoid...2`,
+                  sum_level = `sum_level...3`,
+                  geo_name = `geo_name...4`) %>%
     dplyr::select(first_cols, dplyr::matches(acs_var_pat)) %>%
     dplyr::mutate_at(dplyr::vars(dplyr::matches(acs_var_pat)), as.double) %>%
     .f() %>% # apply user-provided variable calculation function
@@ -165,6 +171,7 @@ import_values <- function(seq,
                           span,
                           geo_abb,
                           .pb = NULL) {
+
 
   if ((!is.null(.pb)) && inherits(.pb, "Progress") && (.pb$i < .pb$n)) {
     .pb$tick()$print()
