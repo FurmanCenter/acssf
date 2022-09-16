@@ -71,8 +71,11 @@ download_docs <- function(docs_dir, year, span) {
 
   fs::dir_create(docs_dir, recurse = TRUE)
 
-  base_url <- glue("https://www2.census.gov/programs-surveys/acs/summary_file/{year}/documentation")
-
+  if (year < 2021){
+      base_url <- glue("https://www2.census.gov/programs-surveys/acs/summary_file/{year}/documentation")
+  } else {
+      base_url <- glue("https://www2.census.gov/programs-surveys/acs/summary_file/{year}/sequence-based-SF/documentation")
+  }
   # get Seq/Table/Var info
   if (year >= 2006) {
     docs_file_url <- dplyr::case_when(
@@ -148,6 +151,13 @@ download_data <- function(data_dir, year, span, geo_name) {
   fs::dir_create(data_dir, recurse = TRUE)
 
   base_url <- glue("https://www2.census.gov/programs-surveys/acs/summary_file/{year}")
+
+
+  if (year < 2021){
+    base_url <- glue("https://www2.census.gov/programs-surveys/acs/summary_file/{year}")
+  } else {
+    base_url <- glue("https://www2.census.gov/programs-surveys/acs/summary_file/{year}/sequence-based-SF")
+  }
 
   if (year >= 2009) {
     if (span == 1L) {
